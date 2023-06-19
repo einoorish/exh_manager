@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Експонати</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<style>
+body {
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 400;
+  display: flex;
+  height: 100%;
+  align-items: stretch;
+  justify-content: center;
+  line-height: 1.5;
+  font-size: 16px;
+  min-height: 700px;
+  height: 100%;
+  background: #f4f4f8;
+}
+
+.navigation {
+  width: 275px;
+  background: #4e5259;
+  align-self: flex-end;
+  color: #ffffff;
+  padding: 16px;
+  height: 100%;
+  position: sticky;
+  bottom: 0;
+  top: 0;
+}
+
+.logout {
+  position: fixed;
+  bottom: 0;
+  margin-bottom: 16px;
+}
+
+.navigation-logo {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  margin: 8px;
+}
+
+svg {
+  margin-right: 8px;
+}
+
+a {
+  display: block;
+  color: #ffffff;
+  text-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  height: 45px;
+  line-height: 45px;
+  transition: all 0.2s ease-out;
+  white-space: nowrap;
+}
+
+.navigation-link {
+  padding: 20px;
+}
+
+p {
+  display: block; /* Fallback for non-webkit */
+  display: -webkit-box;
+  height: 3.9em; /* Fallback for non-webkit, line-height * 2 */
+  line-height: 1.3em;
+  -webkit-line-clamp: 3; /* if you change this, make sure to change the fallback line-height and height */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.p_bigger {
+  display: block; /* Fallback for non-webkit */
+  display: -webkit-box;
+  height: 7.5em; /* Fallback for non-webkit, line-height * 2 */
+  line-height: 1.3em;
+  -webkit-line-clamp: 5; /* if you change this, make sure to change the fallback line-height and height */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h1 {
+  margin:16px;
+}
+
+/* search bar */
+      .bgcolor{
+          background-color: #fff;
+      }
+
+      section.section.section-small {
+          width:100%;
+          padding-top: 15px;
+          padding-left: 15px;
+          padding-right: 15px;
+      }
+
+      section.section {
+          margin-top: 25px;
+          background-color: #fff;
+          box-shadow: -1px 0 2px 0 rgba(0,0,0,.12), 1px 0 2px 0 rgba(0,0,0,.12), 0 1px 1px 0 rgba(0,0,0,.12);
+      }
+
+      section.section {
+          padding-top: 15px;
+          padding-left: 30px;
+          padding-right: 30px;
+          padding-bottom: 15px;
+          margin: 1em;
+      }
+
+      .btn {
+          padding: 8px 16px;
+          font-size: 16px;
+          font-size: 1.6rem;
+          border-radius: 3px;
+      }
+
+      .btn-lg, .btn-group-lg>.btn {
+          padding: 10px 16px;
+          font-size: 18px;
+          line-height: 1.3333333;
+          border-radius: 6px;
+      }
+
+      .btn {
+          display: inline-block;
+          font-weight: normal;
+          text-align: center;
+          vertical-align: middle;
+          -ms-touch-action: manipulation;
+          touch-action: manipulation;
+          cursor: pointer;
+          background-image: none;
+          border: 1px solid transparent;
+          white-space: nowrap;
+          padding: 6px 12px;
+          font-size: 16px;
+          line-height: 1.42857143;
+          border-radius: 4px;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+      }
+
+      .text-center {
+              text-align: center;
+      }
+
+      .subtitle {
+          font-size: 1.3em;
+          padding:1em;
+      }
+
+select, select option {text-transform:capitalize}
+
+</style>
+<body>
+<div class="container-fluid" style="height:100vh;">
+  <div class="row" style="height:100%;">
+    <div class="navigation" style="height:100%;">
+      <div class="navigation-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-box navigation-logo__icon">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span> Меню </span>
+      </div>
+
+      <nav role="navigation" style="margin-top:8px;">
+        <a class="navigation-link" th:href="@{/categories}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="navigation-link__icon feather feather-grid">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Публічні колекції</span>
+        </a>
+        <a class="navigation-link" th:href="@{/exhibits}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="navigation-link__icon feather feather-file-text">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Експонати</span>
+        </a>
+
+      </nav>
+
+      <a class="navigation-link logout" th:href="@{/clear_session}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="navigation-link__icon feather feather-power">
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+          <line x1="12" y1="2" x2="12" y2="12"></line>
+        </svg>
+        <span>Вихід</span>
+      </a>
+    </div>
+    <div class="col">
+      <div class="col-md-12">
+        <h1>Еспонати</h1>
+        <div class="row">
+          <div class="col-md-10 mt-3">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-secondary active" id="gallery-view-btn">Галерея</button>
+              <button type="button" class="btn btn-secondary" id="list-view-btn">Список</button>
+              <button type="button" class="btn btn-secondary" id="table-view-btn">Таблиця</button>
+            </div>
+          </div>
+          <div class="col-md-2 mt-3">
+            <a th:href="@{/add-exhibit}" class="btn btn-info" style="height: 2.5em;">Створити експонат</a>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+            <section class="section section-small row">
+              <div>
+                <span class="subtitle">Епоха</span>
+              </div>
+              <div class="col-2">
+                <select class="form-control" id="epoch" th:field="*{epochs}" onchange="applyFilter()">
+                  <option th:each="epoch : ${epochs}" th:value="${epoch.left}" th:text="${epoch.right}"></option>
+                </select>
+              </div>
+
+              <div>
+                <span class="subtitle">Тип</span>
+              </div>
+              <div class="col-2">
+                <select class="form-control" id="type" th:field="*{types}" onchange="applyFilter()">
+                  <option th:each="type : ${types}" th:value="${type.left}" th:text="${type.right}"></option>
+                </select>
+              </div>
+
+              <div>
+                <span class="subtitle">Тема</span>
+              </div>
+              <div class="col-2">
+                <select class="form-control" id="subject" th:field="*{subjects}" onchange="applyFilter()">
+                  <option th:each="subject : ${subjects}" th:value="${subject.left}" th:text="${subject.right}"></option>
+                </select>
+              </div>
+
+              <div>
+                <span class="subtitle">Тип Медіа</span>
+              </div>
+              <div class="col-2">
+                <select id="media-type" class="form-control" th:field="*{selectedMediaType}" onchange="applyFilter()">
+                  <option th:each="mediaType : ${mediaTypes}" th:value="${mediaType.left}" th:text="${mediaType.right}"></option>
+                </select>
+              </div>
+            </section>
+        </div>
+
+        <div class="row mt-3" id="gallery-view">
+          <!-- Gallery Items Go Here -->
+          <div th:switch="${exhibits}">
+            <h2 th:case="null">Не знайдено експонатів.</h2>
+            <div th:case="*">
+
+              <div class="col-md-12">
+                <div class="card-columns">
+                  <div th:each="exhibit : ${exhibits}" class="card" th:onclick="'javascript:window.location.href=\'' +  @{/exhibit/{id}(id=${exhibit.id})} + '\';'">
+                    <img th:src="${exhibit.thumbnailUrl}" alt="Item Image" style="max-height:250px;width:100%;object-fit:cover;padding:8px;"/>
+                    <div class="card-body">
+                      <h5 th:text="${exhibit.title}" class="card-title"></h5>
+                      <p th:text="${exhibit.description}"  class="max-lines"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3" id="list-view" style="display:none">
+          <div class="col-md-12">
+            <ul class="list-group">
+              <li class="list-group-item" th:each="exhibit : ${exhibits}">
+                <div class="row align-items-center">
+                  <div class="col-md-4" th:onclick="'javascript:window.location.href=\'' +  @{/exhibit/{id}(id=${exhibit.id})} + '\';'">
+                    <img th:src="${exhibit.thumbnailUrl}" alt="Item Image" style="height:300px;width:100%;object-fit:cover;padding:8px;"/>
+                  </div>
+                  <div class="col-md-8">
+                    <h5 th:text="${exhibit.title}">Назва</h5>
+                    <p th:text="${exhibit.description}" class="p_bigger">Опис</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row mt-3" id="table-view" style="display:none">
+          <div class="col-md-12">
+            <table class="table table-bordered" style="background-color:#ffffff">
+              <thead>
+              <tr>
+                <th>Назва</th>
+                <th>Опис</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="exhibit : ${exhibits}" th:onclick="'javascript:window.location.href=\'' +  @{/details/{id}(id=${exhibit.id})} + '\';'">
+                <td>
+                  <span class="font-medium mb-0" th:text="${exhibit.title}"></span>
+                </td>
+                <td>
+                  <span class="font-medium mb-0 max-lines" th:text="${exhibit.description}"></span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha256-BTFwrE+tZGElagP7VbT/uJnnSk7A/IyFrgOg7VZxMzU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"
+        integrity="sha384-6NfJjXzU6LJUjjly3qF+kK4Ai4HJyWsgSiE7YsRViimzpxoNx95u6vfO+9IIuKH7"
+        crossorigin="anonymous"></script>
+<script>
+  function applyFilter() {
+    const mediaTypeEl = document.getElementById('media-type');
+    const mediaType = mediaTypeEl.options[mediaTypeEl.options.selectedIndex].value;
+
+    const typeEl = document.getElementById('type');
+    const type = typeEl.options[typeEl.options.selectedIndex].value;
+
+    const subjectEl = document.getElementById('subject');
+    const subject = subjectEl.options[subjectEl.options.selectedIndex].value;
+
+    const epochEl = document.getElementById('epoch');
+    const epoch = epochEl.options[epochEl.options.selectedIndex].value;
+
+    const url = `/exhibits?type=`+type+`&subject=`+subject+`&mediaType=`+mediaType+`&epoch=`+epoch;
+    window.location.href = url;
+  }
+
+    // Gallery View Button
+    $('#gallery-view-btn').on('click', function() {
+      $('#gallery-view').show();
+      $('#list-view').hide();
+      $('#table-view').hide();
+      $('#gallery-view-btn').addClass('active');
+      $('#list-view-btn').removeClass('active');
+      $('#table-view-btn').removeClass('active');
+    });
+
+    // List View Button
+    $('#list-view-btn').on('click', function() {
+      $('#gallery-view').hide();
+      $('#list-view').show();
+      $('#table-view').hide();
+      $('#gallery-view-btn').removeClass('active');
+      $('#list-view-btn').addClass('active');
+      $('#table-view-btn').removeClass('active');
+    });
+
+    // Table View Button
+    $('#table-view-btn').on('click', function() {
+      $('#gallery-view').hide();
+      $('#list-view').hide();
+      $('#table-view').show();
+      $('#gallery-view-btn').removeClass('active');
+      $('#list-view-btn').removeClass('active');
+      $('#table-view-btn').addClass('active');
+    });
+  </script>
+</body>
+</html>
+

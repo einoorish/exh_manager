@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Деталі експонату</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" integrity="sha512-n8IpKWzDnBOcBhRlHirMZOUvEq2bLRMuJGjuVqbzUJwtTsgwOgK5aS0c1JA647XWYfqvXve8k3PtZdzpipFjgg==" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<style>
+body {
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  font-size: 16px;
+  min-height: 700px;
+  height: 100%;
+  background-color: #f4f4f8;
+}
+
+
+.img{
+  max-width: 700px;
+}
+</style>
+<body>
+    <div class="container" style="margin:32px;background-color:#ffffff">
+        <div class="row mt-3" style="padding-top:16px;">
+            <div class="col-md-3">
+                <img th:src="${exhibit.thumbnailUrl}" alt="${exhibit.title}"  style="max-width:100%;max-height:300px;">
+            </div>
+            <div class="col-md-7">
+                <h4 th:text="${exhibit.title}" style="padding-bottom:16px;"></h4>
+                <p th:text="'ТЕМА: '+${exhibit_subject}"></p>
+                <p th:text="'ТИП: '+${exhibit_type}"></p>
+                <p th:text="'ЕПОХА: '+${exhibit_epoch}"></p>
+            </div>
+            <div class="col-md-2">
+                <a th:href="'/edit-exhibit/'+${exhibit.id}" class="btn btn-info mt-3">Редагувати</a>
+                <button type="button" class="btn btn-danger mt-3" data-toggle="modal" th:attr="data-target='#recordDeleteModal'+${exhibit.id}">Видалити</button>
+                <!-- Modal -->
+                <div class="modal fade" th:attr="id='recordDeleteModal'+${exhibit.id}" tabindex="-1" role="dialog" aria-labelledby="recordDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="recordDeleteModalLabel">Видалити запис</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Ви точно бажаєте видалити експонат?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ні</button>
+                                <a href="newRecordForm.html" class="btn btn-primary" th:attr="href='/delete-exhibit/'+${exhibit.id}">Так</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal end -->
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <h5>Опис:</h5>
+                <p th:text="${exhibit.description}"></p>
+            </div>
+        </div>
+        <div class="row mt-3" style="padding-bottom: 2em;">
+            <div class="col-md-12">
+                <h5>Медіа:</h5>
+                <progress value="0" max="100" id="progressBar"></progress>
+                <div id="file-list"></div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="fileUrl" th:value="${file_data}" />
+
+
+<script type="module" th:inline="javascript">
+import { OrbitControls } from 'https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js'
+
+var file = JSON.parse(document.getElementById("fileUrl").value);
+const div = document.getElementById("file-list");
+var progressBar = document.getElementById('progressBar');
+
+function showModel(url) {
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, 800 / 500, 0.1, 1000);
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(800, 500);
+    div.appendChild(renderer.domElement);
+    const canvas = renderer.domElement;
+
+    var controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
+
+    var keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    keyLight.position.set(-50, 0, 50);
+
+    var fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(50, 0, 50);
+
+    var backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    backLight.position.set(50, 0, -50).normalize();
+
+    var topLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    topLight.position.set(0, 50, 0);
+
+    scene.add(keyLight);
+    scene.add(fillLight);
+    scene.add(backLight);
+    scene.add(topLight);
+
+    let ambient = new THREE.AmbientLight(0xffffff, 0.75);
+
+    scene.add( ambient );
+    scene.background = new THREE.Color(0xefefef);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load(url,
+        function ( gltf ) {
+            scene.add( gltf.scene );
+            const box = new THREE.Box3().setFromObject( gltf.scene );
+            const size = box.getSize(new THREE.Vector3());
+
+            var vFOV = camera.fov * Math.PI / 180;        // convert vertical fov to radians
+            var height = 2 * Math.tan( vFOV / 2 ) * dist; // visible height
+            var dist = size.y / ( 2 * Math.tan( camera.fov * Math.PI / 360 ) );
+            camera.position.set( 0, 0, (size.y)/2 + dist + 0.1);
+            progressBar.style.display = 'none'
+        },
+
+        function ( xhr ) {
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            progressBar.value = percentComplete === Infinity ? 100 : percentComplete
+        },
+
+        function ( error ) {
+            console.log( 'An error happened' );
+        }
+    );
+
+    render();
+
+    function render() {
+      if (resize(renderer)) {
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+
+    function resize(renderer) {
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const needResize = canvas.width !== width || canvas.height !== height;
+      if (needResize) {
+        renderer.setSize(width, height, false);
+      }
+      return needResize;
+    }
+}
+
+console.log(file.type);
+if (file.type === "PHOTO") {
+    progressBar.style.display = 'none'
+    const img = document.createElement("img");
+    img.src = file.url;
+    img.alt = file.name;
+    img.style.width = '100%';
+    div.appendChild(img);
+} else if (file.type === "AUDIO") {
+    progressBar.style.display = 'none'
+    const audio = document.createElement("audio");
+    audio.src = file.url;
+    audio.controls = true;
+    div.appendChild(audio);
+} else if (file.type === "VIDEO") {
+    progressBar.style.display = 'none'
+    const video = document.createElement("video");
+    video.src = file.url;
+    video.controls = true;
+    video.style.width = '100%';
+    div.appendChild(video);
+} else if (file.type === "_3D") {
+    showModel(file.url);
+}
+
+
+</script>
+
+
+</body>

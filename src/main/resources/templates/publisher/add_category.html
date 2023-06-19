@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Створення колекції</title>
+
+    <!-- jQuery and Shield UI includes -->
+    <link id="themecss" rel="stylesheet" type="text/css" href="https://www.shieldui.com/shared/components/latest/css/light/all.min.css" />
+    <script type="text/javascript" src="https://www.shieldui.com/shared/components/latest/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://www.shieldui.com/shared/components/latest/js/shieldui-all.min.js"></script>
+
+    <!-- Bootstrap includes -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<style>
+body {
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  font-size: 16px;
+  min-height: 700px;
+  height: 100%;
+  background-color: #f4f4f8;
+}
+
+#myInput {
+  background-image: url('/css/searchicon.png'); /* Add a search icon to input */
+  background-position: 10px 12px; /* Position the search icon */
+  background-repeat: no-repeat; /* Do not repeat the icon image */
+  width: 100%; /* Full-width */
+  font-size: 16px; /* Increase font-size */
+  padding: 12px 20px 12px 40px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-bottom: 12px; /* Add some space below the input */
+}
+
+#myTable {
+  border-collapse: collapse; /* Collapse borders */
+  width: 100%; /* Full-width */
+  border: 1px solid #ddd; /* Add a grey border */
+  font-size: 18px; /* Increase font-size */
+}
+
+#myTable th, #myTable td {
+  text-align: left; /* Left-align text */
+  padding: 12px; /* Add padding */
+}
+
+#myTable tr {
+  /* Add a bottom border to all table rows */
+  border-bottom: 1px solid #ddd;
+}
+
+#myTable tr.header, #myTable tr:hover {
+  /* Add a grey background color to the table header and on hover */
+  background-color: #f1f1f1;
+}
+
+/* drag styles */
+.dragged { background-color: white; color: white; border-color: white; }
+.dragged td * { visibility: hidden; }
+
+</style>
+<body>
+<form th:object="${category}" th:action="@{/add-category}" th:method="post" enctype="multipart/form-data">
+
+    <div class="container mt-4">
+        <h1>Створення колекції</h1>
+        <div class="form-group">
+            <label for="title">Назва:</label>
+            <input required type="text" class="form-control" id="title" th:field="*{title}"/>
+        </div>
+        <div class="form-group">
+            <label for="description">Опис:</label>
+            <textarea required class="form-control" id="description" rows="5" th:field="*{description}"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="thumbnail">Мініатюра:</label>
+            <div class="custom-file">
+                <input required type="file" class="form-control-file" id="thumbnail" name="thumbnail"
+                       accept=".png, .jpg, .jpeg"
+                       th:field="*{thumbnail}" onchange="previewThumbnail(this)"/>
+            </div>
+            <img id="thumbnail-preview" style="display: none;max-width:350px;max-height:350px;padding:16px;" src="http://placehold.it/180" alt="Thumbnail preview" />
+        </div>
+
+        <input type="text" id="myInput" onkeyup="tableSearch()" placeholder="Пошук по назві та опису...">
+        <table id="myTable" class="table table-hover">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Порядок</th>
+                <th>Назва</th>
+                <th>Опис</th>
+                <th>Додати</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="exhibit : ${exhibits}">
+                <td style="display:none;" th:text="${exhibit.id}"></td>
+                <td><span class="glyphicon glyphicon-menu-hamburger" style="color:#bbb; cursor:move;"></span></td>
+                <td></td>
+                <td th:text="${exhibit.title}"></td>
+                <td th:text="${exhibit.description}"></td>
+                <td><input type="checkbox" th:field="*{selectedItems}" th:value="${exhibit.id}" name="selectedItems[]"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br><br>
+        <input type="submit" class="btn btn-success" value="Створити">
+    </div>
+</form>
+
+<script th:inline="javascript">
+    const previewElement = document.getElementById('thumbnail-preview');
+    function previewThumbnail(input) {
+        if (input.files && input.files[0]) {
+            previewElement.style.objectFit = "cover";
+            previewElement.src = URL.createObjectURL(input.files[0]);
+            previewElement.style.display = 'block';
+        }
+    }
+
+
+    function tableSearch() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[3];
+        td1 = tr[i].getElementsByTagName("td")[4];
+
+        txtValue = td.textContent + " " + td1.textContent;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+      }
+    }
+
+    jQuery(function($) {
+
+    function updateRowNumbers() {
+        var counter = 0;
+        $("#myTable tbody tr").each(function(index, row) {
+            var checkbox = $(row).find("td:eq(5) input[type='checkbox']");
+            if (checkbox.is(":checked")) {
+                counter++;
+                $($(row).find("td").get(2)).html(counter + ".");
+            } else {
+                $($(row).find("td").get(2)).html("");
+            }
+        });
+    }
+
+
+    var onAfterReordering = function() {
+        updateRowNumbers();
+    };
+
+    $("#myTable tbody").on("change", "input[type='checkbox']", function() {
+        updateRowNumbers();
+    });
+
+    var initRowReordering = function(row) {
+        $(row).css("cursor", "move");
+
+        $(row).shieldDraggable({
+            helper: function (params) {
+                // the draggable helper is the element used as a preview of the element being dragged
+                // it can be a copy, or the actual element
+
+                // here we create a copy of the dragged row and add it in a table,
+                // so that the styles can be applied
+                var helper = $('<table class="table table-hover"></table>');
+                var tbody = $('<tbody />').appendTo(helper);
+                tbody.append(row.clone());
+
+                // fix the style of the TDs in the helper row - widths are copied from the original row
+                // this will make the drag helper look like the original
+                helper.find('td').each(function (index) {
+                    $(this).width($(row.find('td')[index]).width());
+                });
+                helper.width(row.width());
+
+                return helper;
+            },
+            events: {
+                start: function (e) {
+                    // add a custom class to the dragged element
+                    // this will "hide" the row being dragged
+                    $(row).addClass("dragged");
+                },
+                drag: function (e) {
+                    // as the element is dragged, determine where to move the dragged row
+                    var element = $(e.element),
+                        elTopOffset = element.offset().top;
+
+                    var rows = $(row).siblings('tr').not('.dragged').get();
+
+                    for (var i = 0; i < rows.length; i++) {
+                        if ($(rows[i]).offset().top > elTopOffset) {
+                            $(row).insertBefore($(rows[i]));
+                            break;
+                        }
+
+                        // if last and still not moved, check if we need to move after
+                        if (i >= rows.length - 1) {
+                            // move element to the last - after the current
+                            $(row).insertAfter($(rows[i]));
+                        }
+                    }
+                },
+                stop: function (e) {
+                    // dragging has stopped - remove the added classes
+                    $(row).removeClass("dragged");
+
+                    // cancel the event, so the original element is NOT moved
+                    // to the position of the handle being dragged
+                    e.cancelled = true;
+                    e.skipAnimation = true;
+
+                    // call the on-after-reorder handler function right after this one finishes
+                    setTimeout(onAfterReordering, 50);
+                }
+            }
+        });
+    };
+
+    // initializes the row reordering for each row
+    $("#myTable tbody tr").each(function () {
+        initRowReordering($(this));
+    });
+});
+</script>
+
+</body>
+</html>

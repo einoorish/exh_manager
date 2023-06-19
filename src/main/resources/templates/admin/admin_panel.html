@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin panel</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+</head>
+<style>
+body {
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  font-size: 16px;
+  min-height: 700px;
+  height: 100%;
+  background-color: #f4f4f8;
+  margin: 0px;
+}
+
+.logout {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 16px;
+  margin-left: 16px;
+}
+
+svg {
+  margin-right: 8px;
+}
+
+a {
+  display: block;
+  color: black;
+  text-color: black;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  height: 45px;
+  line-height: 45px;
+  transition: all 0.2s ease-out;
+  white-space: nowrap;
+}
+
+.navigation-link {
+  padding: 20px;
+}
+
+table {
+  width: 100% !important;
+}
+
+</style>
+<body>
+
+<a class="navigation-link logout" th:href="@{/clear_session}">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="navigation-link__icon feather feather-power">
+    <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+    <line x1="12" y1="2" x2="12" y2="12"></line>
+  </svg>
+  <span>Вийти</span>
+</a>
+
+<div th:switch="${organizations}">
+  <h2 th:case="null">Не знайдено жодної організації.</h2>
+  <div th:case="*">
+    <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-uppercase mb-0">Керування організаціями</h5>
+            </div>
+            <div class="table-responsive">
+              <table class="table user-table mb-0">
+                <thead>
+                <tr>
+                  <th scope="col" class="border-0 text-uppercase font-medium">Назва</th>
+                  <th scope="col" class="border-0 text-uppercase font-medium">Тип</th>
+                  <th scope="col" class="border-0 text-uppercase font-medium">Контактні дані</th>
+                  <th scope="col" class="border-0 text-uppercase font-medium">Статус</th>
+                  <th scope="col" class="border-0 text-uppercase font-medium">Дія</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="organization : ${organizations}">
+                  <td>
+                    <span class="text-muted" th:text="${organization.organizationName}"></span>
+                  </td>
+                  <td>
+                    <span class="text-muted" th:text="${organization.type}"></span><br>
+                    <span class="text-muted" th:text="${organization.directions}"></span>
+                  </td>
+                  <td>
+                    <span class="text-muted" th:text="${organization.email}"></span><br>
+                    <span class="text-muted" th:text="${organization.phone}"></span><br>
+                    <span class="text-muted" th:text="${organization.fullName}"></span>
+                  </td>
+                  <td>
+                    <span class="text-muted" th:text="${organization.statusUkr}"></span><br>
+                  </td>
+                  <td>
+                    <div th:switch="${organization.statusUkr}">
+                      <div th:case="'НОВА'">
+                        <form th:action="'/approve/'+${organization.id}" method="post">
+                          <input type="hidden" name="id" th:value="${organization.id}" />
+                          <input type="submit" class="btn btn-success" value="Затвердити" style="width: 100%;" />
+                        </form>
+                        <form th:action="'/decline/'+${organization.id}" method="post">
+                          <input type="hidden" name="id" th:value="${organization.id}" />
+                          <input type="submit" class="btn btn-danger" value="Відхилити" style="width: 100%;" />
+                        </form>
+                      </div>
+                      <div th:case="'ЗАТВЕРДЖЕНА'">
+                        <form th:action="'/ban/'+${organization.id}" method="post">
+                          <input type="hidden" name="id" th:value="${organization.id}" />
+                          <input type="submit" class="btn btn-danger" value="Заблокувати" style="width: 100%;" />
+                        </form>
+                      </div>
+                      <div th:case="'ЗАБЛОКОВАНА'"></div>
+                    </div>
+                  </td>
+
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+</body>
+</html>
